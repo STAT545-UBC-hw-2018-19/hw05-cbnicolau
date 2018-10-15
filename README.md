@@ -19,5 +19,5 @@ This repo contains:
 - [ ] Part 3: Visualization design
 - [ ] Part 4: Writing figures to file
 - [ ] Reflection and Submit hw link to canvas
-- [ ] Peer review hw03
+- [ ] Peer review hw04
 - [ ] Submit link of peer review to canvas
