@@ -9,25 +9,98 @@ output:
 
 # Homework 05: Factor and figure management
 
+Load required libraries
+```{r load libraries, message=FALSE, warning=FALSE}
+library(gapminder)
+library(tidyverse)
+library(forcats)
+```
+
+
 ##Part 1: Factor management
 
-With the data set of your choice, after ensuring the variable(s) you’re exploring are indeed factors, you are expected to:
+First check the structure of the data set and ensure there are variables which are **factors**
+
+```{r}
+str(gapminder)
+```
+
+We can see that indeed the variables `country` and `continent` are factors
 
 1. Drop factor / levels;
+
+**Drop Oceania.** Filter the Gapminder data to remove observations associated with the continent of Oceania. Additionally, remove unused factor levels. Provide concrete information on the data before and after removing these rows and Oceania; address the number of rows and the levels of the affected factors.
+
+Let's filter the data first
+
+```{r}
+(gapminder_notOceania <- gapminder %>% 
+  filter(continent != "Oceania"))
+```
+
+And investigate it's structure
+```{r}
+str(gapminder_notOceania) 
+levels(gapminder_notOceania$continent)
+nlevels(gapminder_notOceania$continent)
+```
+We can see from looking at the structure that Oceania is still a factor, but because `gapminder_notOceania` has fewer observations (1680 rows) that the unmodified `gapminder` (1704 rows), we can see that we effectively filtered out all the cuntries in Oceania
+
+Let's confirm this with a plot:
+
+```{r}
+ggplot(gapminder_notOceania, aes(continent)) +
+  geom_bar() +
+  scale_x_discrete(drop=FALSE) #to prevent ggplot from dropping the unused factors automatically
+```
+
+Now let's drop the unused factors
+
+```{r}
+gapminder_notOceania %>%
+  droplevels() %>%
+  str()
+```
+
+Now we see that the variable `continent` has only 4 factors.
+
+
 2. Reorder levels based on knowledge from data.
-We’ve elaborated on these steps for the gapminder and singer data sets below.
+
+**Reorder the levels of country or continent.** Use the forcats package to change the order of the factor levels, based on a principled summary of one of the quantitative variables. Consider experimenting with a summary statistic beyond the most basic choice of the median.
+
+Let's filter the data for just the year 2007, and reorder the plot
+
+```{r}
+gapminder_notOceania %>%
+  filter(year == 2007) %>%
+  mutate(continent = fct_reorder(continent,gdpPercap)) %>% #reorder according to the median, increasing
+  ggplot(aes(continent, gdpPercap)) +
+  geom_boxplot() +
+  theme_bw()
+```
+
+Now let's try reordering according to the mean
+
+```{r}
+#gapminder_notOceania %>%
+#  filter(year == 2007) %>%
+#  mutate(continent = fct_reorder(continent,gdpPercap,fun = mean) %>% #reorder according to the mean, increasing
+#  ggplot(aes(continent, gdpPercap)) +
+#  geom_boxplot() +
+#  theme_bw()
+```
+_This didn't work for some reason..._
 
 Be sure to also characterize the (derived) data before and after your factor re-leveling:
 
 3. Explore the effects of arrange(). Does merely arranging the data have any effect on, say, a figure?
+
 4. Explore the effects of reordering a factor and factor reordering coupled with arrange(). Especially, what effect does this have on a figure?
 
 These explorations should involve the data, the factor levels, and some figures.
 
-### Elaboration for the gapminder data set
-**Drop Oceania.** Filter the Gapminder data to remove observations associated with the continent of Oceania. Additionally, remove unused factor levels. Provide concrete information on the data before and after removing these rows and Oceania; address the number of rows and the levels of the affected factors.
 
-**Reorder the levels of country or continent.** Use the forcats package to change the order of the factor levels, based on a principled summary of one of the quantitative variables. Consider experimenting with a summary statistic beyond the most basic choice of the median.
 
 ## Part 2: File I/O
 Experiment with one or more of write_csv()/read_csv() (and/or TSV friends), saveRDS()/readRDS(),  dput()/dget(). Create something new, probably by filtering or grouped-summarization of Singer or Gapminder. I highly recommend you fiddle with the factor levels, i.e. make them non-alphabetical (see previous section). Explore whether this survives the round trip of writing to file then reading back in.
