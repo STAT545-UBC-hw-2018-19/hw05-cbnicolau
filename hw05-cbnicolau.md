@@ -91,7 +91,7 @@ nlevels(gapminder_notOceania$continent)
 
     ## [1] 5
 
-We can see from looking at the structure that Oceania is still a factor, but because `gapminder_notOceania` has fewer observations (1680 rows) that the unmodified `gapminder` (1704 rows), we can see that we effectively filtered out all the cuntries in Oceania
+We can see from looking at the structure that `Oceania` is still a level of the `continent` factor, and the number of levels in `contient` is still 5, but because `gapminder_notOceania` has fewer observations (1680 rows) that the unmodified `gapminder` (1704 rows), we can see that we effectively filtered out all the cuntries in Oceania
 
 Let's confirm this with a plot:
 
@@ -101,9 +101,9 @@ ggplot(gapminder_notOceania, aes(continent)) +
   scale_x_discrete(drop=FALSE) #to prevent ggplot from dropping the unused factors automatically
 ```
 
-![](hw05-cbnicolau_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](hw05-cbnicolau_files/figure-markdown_github/explore%20factors-1.png)
 
-Now let's drop the unused factors
+Now let's drop the unused levels
 
 ``` r
 gapminder_notOceania %>%
@@ -119,7 +119,7 @@ gapminder_notOceania %>%
     ##  $ pop      : int  8425333 9240934 10267083 11537966 13079460 14880372 12881816 13867957 16317921 22227415 ...
     ##  $ gdpPercap: num  779 821 853 836 740 ...
 
-Now we see that the variable `continent` has only 4 factors.
+Now we see that the variable `continent` has only 4 levels.
 
 1.  Reorder levels based on knowledge from data.
 
@@ -132,30 +132,92 @@ gapminder_notOceania %>%
   filter(year == 2007) %>%
   mutate(continent = fct_reorder(continent,gdpPercap)) %>% #reorder according to the median, increasing
   ggplot(aes(continent, gdpPercap)) +
-  geom_boxplot() +
+  geom_boxplot(aes(color = continent)) +
   theme_bw()
 ```
 
-![](hw05-cbnicolau_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](hw05-cbnicolau_files/figure-markdown_github/reorder%20median-1.png)
 
 Now let's try reordering according to the mean
 
 ``` r
-#gapminder_notOceania %>%
-#  filter(year == 2007) %>%
-#  mutate(continent = fct_reorder(continent,gdpPercap,fun = mean) %>% #reorder according to the mean, increasing
-#  ggplot(aes(continent, gdpPercap)) +
-#  geom_boxplot() +
-#  theme_bw()
+gapminder_notOceania %>%
+  filter(year == 2007) %>%
+  mutate(continent = fct_reorder(continent,gdpPercap, mean)) %>% #reorder according to the mean, increasing
+  ggplot(aes(continent, gdpPercap)) +
+  geom_boxplot(aes(color = continent)) +
+  theme_bw()
 ```
 
-*This didn't work for some reason...*
+![](hw05-cbnicolau_files/figure-markdown_github/reorder_mean-1.png)
 
 Be sure to also characterize the (derived) data before and after your factor re-leveling:
 
 1.  Explore the effects of arrange(). Does merely arranging the data have any effect on, say, a figure?
 
-2.  Explore the effects of reordering a factor and factor reordering coupled with arrange(). Especially, what effect does this have on a figure?
+Let's compare the effect of reorder and arrage
+
+First, plot `gdpPercap` for each country without any particular order (alphabetical by default)
+
+``` r
+gapminder %>%
+  filter(year == 2007) %>%
+  ggplot(aes(x = gdpPercap , y = country)) + 
+  geom_point()
+```
+
+![](hw05-cbnicolau_files/figure-markdown_github/not%20ordered-1.png)
+
+Let's now use `reorder()` to sort the countries by ascending `gdpPercap`
+
+``` r
+reordered_gapminder <- gapminder %>%
+  filter(year == 2007) %>%
+  mutate(country = reorder(country, gdpPercap))
+  
+ggplot(reordered_gapminder, aes(x = gdpPercap , y = country)) +
+  geom_point()
+```
+
+![](hw05-cbnicolau_files/figure-markdown_github/reordered-1.png)
+
+Let's try `arrange()`
+
+``` r
+arranged_gapminder <- gapminder %>%
+  filter(year == 2007) %>%
+  arrange(gdpPercap)
+
+ggplot(arranged_gapminder, aes(x = gdpPercap , y = country)) +
+  geom_point()
+```
+
+![](hw05-cbnicolau_files/figure-markdown_github/arranged-1.png)
+
+When only using arrange and saving to the object it doesn't seem to make any difference for the plot, Lets inspect this object:
+
+``` r
+arranged_gapminder %>%
+  head(10) %>%
+  knitr::kable()
+```
+
+| country                  | continent |  year|  lifeExp|       pop|  gdpPercap|
+|:-------------------------|:----------|-----:|--------:|---------:|----------:|
+| Congo, Dem. Rep.         | Africa    |  2007|   46.462|  64606759|   277.5519|
+| Liberia                  | Africa    |  2007|   45.678|   3193942|   414.5073|
+| Burundi                  | Africa    |  2007|   49.580|   8390505|   430.0707|
+| Zimbabwe                 | Africa    |  2007|   43.487|  12311143|   469.7093|
+| Guinea-Bissau            | Africa    |  2007|   46.388|   1472041|   579.2317|
+| Niger                    | Africa    |  2007|   56.867|  12894865|   619.6769|
+| Eritrea                  | Africa    |  2007|   58.040|   4906585|   641.3695|
+| Ethiopia                 | Africa    |  2007|   52.947|  76511887|   690.8056|
+| Central African Republic | Africa    |  2007|   44.741|   4369038|   706.0165|
+| Gambia                   | Africa    |  2007|   59.448|   1688359|   752.7497|
+
+We see that `arrange()`does arrange the items in the order we wanted, it's just that when plotting this order is not preserved. However, note that we start with African countries.
+
+1.  Explore the effects of reordering a factor and factor reordering coupled with arrange(). Especially, what effect does this have on a figure?
 
 These explorations should involve the data, the factor levels, and some figures.
 
