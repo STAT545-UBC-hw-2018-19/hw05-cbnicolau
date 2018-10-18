@@ -14,6 +14,7 @@ Load required libraries
 library(gapminder)
 library(tidyverse)
 library(forcats)
+library(gridExtra)
 ```
 
 
@@ -76,19 +77,19 @@ gapminder_notOceania %>%
   filter(year == 2007) %>%
   mutate(continent = fct_reorder(continent,gdpPercap)) %>% #reorder according to the median, increasing
   ggplot(aes(continent, gdpPercap)) +
-  geom_boxplot(aes(color = continent)) +
-  theme_bw()
+  geom_boxplot(aes())
 ```
 
 Now let's try reordering according to the mean
 
 ```{r reorder_mean}
-gapminder_notOceania %>%
+gapminder_NO <- gapminder_notOceania %>%
   filter(year == 2007) %>%
   mutate(continent = fct_reorder(continent,gdpPercap, mean)) %>% #reorder according to the mean, increasing
   ggplot(aes(continent, gdpPercap)) +
-  geom_boxplot(aes(color = continent)) +
-  theme_bw()
+  geom_boxplot(aes()) 
+
+gapminder_NO
 ```
 
 
@@ -175,10 +176,35 @@ Let's save the `reordered_arranged_gapminder` dataset in a new `.csv` file.
 write_csv(reordered_arranged_gapminder, "RA_gapminder.csv")
 ```
 
+Let's read it now
+
+```{r}
+RA_gapminder <- read_csv("RA_gapminder.csv")
+
+head(RA_gapminder, 30) %>%
+  knitr::kable()
+```
+
 
 ## Part 3: Visualization design
 
 Remake at least one figure or create a new one, in light of something you learned in the recent class meetings about visualization design and color. Maybe juxtapose your first attempt and what you obtained after some time spent working on it. Reflect on the differences. If using Gapminder, you can use the country or continent color scheme that ships with Gapminder. Consult the dimensions listed in All the Graph Things.
+
+```{r}
+gapminder_NO2 <- gapminder_notOceania %>% #save into new object
+  filter(year == 2007) %>%
+  mutate(continent = fct_reorder(continent,gdpPercap, mean)) %>% #reorder according to the mean, increasing
+  ggplot(aes(continent, gdpPercap)) +
+  geom_jitter(aes(color = continent), alpha = 0.2) +
+  geom_boxplot(aes(color = continent)) +
+  scale_y_log10(breaks = 10^(1:6)) +
+  theme_minimal() +
+  theme(legend.position="none")
+
+compare_plots <- grid.arrange(gapminder_NO, gapminder_NO2, ncol = 2)
+compare_plots
+```
+
 
 Then, make a new graph by converting this visual (or another, if you’d like) to a plotly graph. What are some things that plotly makes possible, that are not possible with a regular ggplot2 graph?
 
@@ -189,3 +215,12 @@ Use ggsave() to explicitly save a plot to file. Then use `![Alt text](/path/to/i
 - Arguments of ggsave(), such as width, height, resolution or text scaling.
 - Various graphics devices, e.g. a vector vs. raster format.
 - Explicit provision of the plot object p via ggsave(..., plot = p). - Show a situation in which this actually matters.
+
+Let's save the comparison plot into a file
+
+```{r}
+ggsave("compare_plots.png", compare_plots, width = 10, height = 7)
+```
+
+And call it to embed it to the report [like this](C:/Users/const/ownCloud/UBC Courses/5 Term 1 2018/STAT545A/git_docs/hw05-cbnicolau/compare_plots.png)
+

@@ -18,6 +18,7 @@ Load required libraries
 library(gapminder)
 library(tidyverse)
 library(forcats)
+library(gridExtra)
 ```
 
 Part 1: Factor management
@@ -91,7 +92,7 @@ nlevels(gapminder_notOceania$continent)
 
     ## [1] 5
 
-We can see from looking at the structure that `Oceania` is still a level of the `continent` factor, and the number of levels in `contient` is still 5, but because `gapminder_notOceania` has fewer observations (1680 rows) that the unmodified `gapminder` (1704 rows), we can see that we effectively filtered out all the cuntries in Oceania
+We can see from looking at the structure that `Oceania` is still a level of the `continent` factor, and the number of levels in `contient` is still 5, but because `gapminder_notOceania` has fewer observations (1680 rows) than the unmodified `gapminder` (1704 rows), we can see that we effectively filtered out all the cuntries in Oceania
 
 Let's confirm this with a plot:
 
@@ -132,8 +133,7 @@ gapminder_notOceania %>%
   filter(year == 2007) %>%
   mutate(continent = fct_reorder(continent,gdpPercap)) %>% #reorder according to the median, increasing
   ggplot(aes(continent, gdpPercap)) +
-  geom_boxplot(aes(color = continent)) +
-  theme_bw()
+  geom_boxplot(aes())
 ```
 
 ![](hw05-cbnicolau_files/figure-markdown_github/reorder%20median-1.png)
@@ -141,17 +141,16 @@ gapminder_notOceania %>%
 Now let's try reordering according to the mean
 
 ``` r
-gapminder_notOceania %>%
+gapminder_NO <- gapminder_notOceania %>%
   filter(year == 2007) %>%
   mutate(continent = fct_reorder(continent,gdpPercap, mean)) %>% #reorder according to the mean, increasing
   ggplot(aes(continent, gdpPercap)) +
-  geom_boxplot(aes(color = continent)) +
-  theme_bw()
+  geom_boxplot(aes()) 
+
+gapminder_NO
 ```
 
 ![](hw05-cbnicolau_files/figure-markdown_github/reorder_mean-1.png)
-
-Be sure to also characterize the (derived) data before and after your factor re-leveling:
 
 1.  Explore the effects of arrange(). Does merely arranging the data have any effect on, say, a figure?
 
@@ -179,7 +178,7 @@ ggplot(arranged_gapminder, aes(x = gdpPercap , y = country)) +
 
 ![](hw05-cbnicolau_files/figure-markdown_github/arranged-1.png)
 
-When only using arrange and saving to the object it doesn't seem to make any difference for the plot, Lets inspect this object:
+When only using `arrange()` and saving to the object it doesn't seem to make any difference for the plot. Let's inspect this object:
 
 ``` r
 arranged_gapminder %>%
@@ -224,12 +223,12 @@ We see that `arrange()`does arrange the items in the order we wanted, it's just 
 
 1.  Explore the effects of reordering a factor and factor reordering coupled with arrange(). Especially, what effect does this have on a figure?
 
-Let's now use `reorder()` to sort the countries by ascending `gdpPercap`
+Let's now use `fct_reorder()` to sort the countries by ascending `gdpPercap`
 
 ``` r
 reordered_gapminder <- gapminder %>%
   filter(year == 2007) %>%
-  mutate(country = reorder(country, gdpPercap))
+  mutate(country = fct_reorder(country, gdpPercap))
   
 ggplot(reordered_gapminder, aes(x = gdpPercap , y = country)) +
   geom_point()
@@ -280,17 +279,155 @@ reordered_gapminder %>%
 
 Looking at the table it seems like the actual data has not been sorted.
 
+Now let's couple `fct_reorder()` with `arrange()`
+
+``` r
+reordered_arranged_gapminder <- gapminder %>%
+  filter(year == 2007) %>%
+  mutate(country = fct_reorder(country, gdpPercap)) %>%
+  arrange(gdpPercap)
+  
+ggplot(reordered_arranged_gapminder, aes(x = gdpPercap , y = country)) +
+  geom_point()
+```
+
+![](hw05-cbnicolau_files/figure-markdown_github/unnamed-chunk-7-1.png)
+
+``` r
+reordered_arranged_gapminder %>%
+  head(30) %>%
+  knitr::kable()
+```
+
+| country                  | continent |  year|  lifeExp|        pop|  gdpPercap|
+|:-------------------------|:----------|-----:|--------:|----------:|----------:|
+| Congo, Dem. Rep.         | Africa    |  2007|   46.462|   64606759|   277.5519|
+| Liberia                  | Africa    |  2007|   45.678|    3193942|   414.5073|
+| Burundi                  | Africa    |  2007|   49.580|    8390505|   430.0707|
+| Zimbabwe                 | Africa    |  2007|   43.487|   12311143|   469.7093|
+| Guinea-Bissau            | Africa    |  2007|   46.388|    1472041|   579.2317|
+| Niger                    | Africa    |  2007|   56.867|   12894865|   619.6769|
+| Eritrea                  | Africa    |  2007|   58.040|    4906585|   641.3695|
+| Ethiopia                 | Africa    |  2007|   52.947|   76511887|   690.8056|
+| Central African Republic | Africa    |  2007|   44.741|    4369038|   706.0165|
+| Gambia                   | Africa    |  2007|   59.448|    1688359|   752.7497|
+| Malawi                   | Africa    |  2007|   48.303|   13327079|   759.3499|
+| Mozambique               | Africa    |  2007|   42.082|   19951656|   823.6856|
+| Sierra Leone             | Africa    |  2007|   42.568|    6144562|   862.5408|
+| Rwanda                   | Africa    |  2007|   46.242|    8860588|   863.0885|
+| Togo                     | Africa    |  2007|   58.420|    5701579|   882.9699|
+| Somalia                  | Africa    |  2007|   48.159|    9118773|   926.1411|
+| Guinea                   | Africa    |  2007|   56.007|    9947814|   942.6542|
+| Myanmar                  | Asia      |  2007|   62.069|   47761980|   944.0000|
+| Afghanistan              | Asia      |  2007|   43.828|   31889923|   974.5803|
+| Comoros                  | Africa    |  2007|   65.152|     710960|   986.1479|
+| Mali                     | Africa    |  2007|   54.467|   12031795|  1042.5816|
+| Madagascar               | Africa    |  2007|   59.443|   19167654|  1044.7701|
+| Uganda                   | Africa    |  2007|   51.542|   29170398|  1056.3801|
+| Nepal                    | Asia      |  2007|   63.785|   28901790|  1091.3598|
+| Tanzania                 | Africa    |  2007|   52.517|   38139640|  1107.4822|
+| Haiti                    | Americas  |  2007|   60.916|    8502814|  1201.6372|
+| Burkina Faso             | Africa    |  2007|   52.295|   14326203|  1217.0330|
+| Zambia                   | Africa    |  2007|   42.384|   11746035|  1271.2116|
+| Ghana                    | Africa    |  2007|   60.022|   22873338|  1327.6089|
+| Bangladesh               | Asia      |  2007|   64.062|  150448339|  1391.2538|
+
+Using both functions seems to work for the actual data too (not only the figure).
+
 Part 2: File I/O
 ----------------
 
 Experiment with one or more of write\_csv()/read\_csv() (and/or TSV friends), saveRDS()/readRDS(), dput()/dget(). Create something new, probably by filtering or grouped-summarization of Singer or Gapminder. I highly recommend you fiddle with the factor levels, i.e. make them non-alphabetical (see previous section). Explore whether this survives the round trip of writing to file then reading back in.
 
-Let's save the `arranged_gapminder` dataset in a new `.csv` file.
+Let's save the `reordered_arranged_gapminder` dataset in a new `.csv` file.
+
+``` r
+write_csv(reordered_arranged_gapminder, "RA_gapminder.csv")
+```
+
+Let's read it now
+
+``` r
+RA_gapminder <- read_csv("RA_gapminder.csv")
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   country = col_character(),
+    ##   continent = col_character(),
+    ##   year = col_integer(),
+    ##   lifeExp = col_double(),
+    ##   pop = col_integer(),
+    ##   gdpPercap = col_double()
+    ## )
+
+``` r
+head(RA_gapminder, 30) %>%
+  knitr::kable()
+```
+
+| country                  | continent |  year|  lifeExp|        pop|  gdpPercap|
+|:-------------------------|:----------|-----:|--------:|----------:|----------:|
+| Congo, Dem. Rep.         | Africa    |  2007|   46.462|   64606759|   277.5519|
+| Liberia                  | Africa    |  2007|   45.678|    3193942|   414.5073|
+| Burundi                  | Africa    |  2007|   49.580|    8390505|   430.0707|
+| Zimbabwe                 | Africa    |  2007|   43.487|   12311143|   469.7093|
+| Guinea-Bissau            | Africa    |  2007|   46.388|    1472041|   579.2317|
+| Niger                    | Africa    |  2007|   56.867|   12894865|   619.6769|
+| Eritrea                  | Africa    |  2007|   58.040|    4906585|   641.3695|
+| Ethiopia                 | Africa    |  2007|   52.947|   76511887|   690.8056|
+| Central African Republic | Africa    |  2007|   44.741|    4369038|   706.0165|
+| Gambia                   | Africa    |  2007|   59.448|    1688359|   752.7497|
+| Malawi                   | Africa    |  2007|   48.303|   13327079|   759.3499|
+| Mozambique               | Africa    |  2007|   42.082|   19951656|   823.6856|
+| Sierra Leone             | Africa    |  2007|   42.568|    6144562|   862.5408|
+| Rwanda                   | Africa    |  2007|   46.242|    8860588|   863.0885|
+| Togo                     | Africa    |  2007|   58.420|    5701579|   882.9699|
+| Somalia                  | Africa    |  2007|   48.159|    9118773|   926.1411|
+| Guinea                   | Africa    |  2007|   56.007|    9947814|   942.6542|
+| Myanmar                  | Asia      |  2007|   62.069|   47761980|   944.0000|
+| Afghanistan              | Asia      |  2007|   43.828|   31889923|   974.5803|
+| Comoros                  | Africa    |  2007|   65.152|     710960|   986.1479|
+| Mali                     | Africa    |  2007|   54.467|   12031795|  1042.5816|
+| Madagascar               | Africa    |  2007|   59.443|   19167654|  1044.7701|
+| Uganda                   | Africa    |  2007|   51.542|   29170398|  1056.3801|
+| Nepal                    | Asia      |  2007|   63.785|   28901790|  1091.3598|
+| Tanzania                 | Africa    |  2007|   52.517|   38139640|  1107.4822|
+| Haiti                    | Americas  |  2007|   60.916|    8502814|  1201.6372|
+| Burkina Faso             | Africa    |  2007|   52.295|   14326203|  1217.0330|
+| Zambia                   | Africa    |  2007|   42.384|   11746035|  1271.2116|
+| Ghana                    | Africa    |  2007|   60.022|   22873338|  1327.6089|
+| Bangladesh               | Asia      |  2007|   64.062|  150448339|  1391.2538|
 
 Part 3: Visualization design
 ----------------------------
 
 Remake at least one figure or create a new one, in light of something you learned in the recent class meetings about visualization design and color. Maybe juxtapose your first attempt and what you obtained after some time spent working on it. Reflect on the differences. If using Gapminder, you can use the country or continent color scheme that ships with Gapminder. Consult the dimensions listed in All the Graph Things.
+
+``` r
+gapminder_NO2 <- gapminder_notOceania %>% #save into new object
+  filter(year == 2007) %>%
+  mutate(continent = fct_reorder(continent,gdpPercap, mean)) %>% #reorder according to the mean, increasing
+  ggplot(aes(continent, gdpPercap)) +
+  geom_jitter(aes(color = continent), alpha = 0.2) +
+  geom_boxplot(aes(color = continent)) +
+  scale_y_log10(breaks = 10^(1:6)) +
+  theme_minimal() +
+  theme(legend.position="none")
+
+compare_plots <- grid.arrange(gapminder_NO, gapminder_NO2, ncol = 2)
+```
+
+![](hw05-cbnicolau_files/figure-markdown_github/unnamed-chunk-10-1.png)
+
+``` r
+compare_plots
+```
+
+    ## TableGrob (1 x 2) "arrange": 2 grobs
+    ##   z     cells    name           grob
+    ## 1 1 (1-1,1-1) arrange gtable[layout]
+    ## 2 2 (1-1,2-2) arrange gtable[layout]
 
 Then, make a new graph by converting this visual (or another, if you’d like) to a plotly graph. What are some things that plotly makes possible, that are not possible with a regular ggplot2 graph?
 
@@ -302,3 +439,11 @@ Use ggsave() to explicitly save a plot to file. Then use `![Alt text](/path/to/i
 -   Arguments of ggsave(), such as width, height, resolution or text scaling.
 -   Various graphics devices, e.g. a vector vs. raster format.
 -   Explicit provision of the plot object p via ggsave(..., plot = p). - Show a situation in which this actually matters.
+
+Let's save the comparison plot into a file
+
+``` r
+ggsave("compare_plots.png", compare_plots, width = 10, height = 7)
+```
+
+And call it to embed it to the report [like this](C:/Users/const/ownCloud/UBC%20Courses/5%20Term%201%202018/STAT545A/git_docs/hw05-cbnicolau/compare_plots.png)
