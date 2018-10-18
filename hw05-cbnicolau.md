@@ -155,8 +155,6 @@ Be sure to also characterize the (derived) data before and after your factor re-
 
 1.  Explore the effects of arrange(). Does merely arranging the data have any effect on, say, a figure?
 
-Let's compare the effect of reorder and arrage
-
 First, plot `gdpPercap` for each country without any particular order (alphabetical by default)
 
 ``` r
@@ -167,19 +165,6 @@ gapminder %>%
 ```
 
 ![](hw05-cbnicolau_files/figure-markdown_github/not%20ordered-1.png)
-
-Let's now use `reorder()` to sort the countries by ascending `gdpPercap`
-
-``` r
-reordered_gapminder <- gapminder %>%
-  filter(year == 2007) %>%
-  mutate(country = reorder(country, gdpPercap))
-  
-ggplot(reordered_gapminder, aes(x = gdpPercap , y = country)) +
-  geom_point()
-```
-
-![](hw05-cbnicolau_files/figure-markdown_github/reordered-1.png)
 
 Let's try `arrange()`
 
@@ -198,33 +183,109 @@ When only using arrange and saving to the object it doesn't seem to make any dif
 
 ``` r
 arranged_gapminder %>%
-  head(10) %>%
+  head(30) %>%
   knitr::kable()
 ```
 
-| country                  | continent |  year|  lifeExp|       pop|  gdpPercap|
-|:-------------------------|:----------|-----:|--------:|---------:|----------:|
-| Congo, Dem. Rep.         | Africa    |  2007|   46.462|  64606759|   277.5519|
-| Liberia                  | Africa    |  2007|   45.678|   3193942|   414.5073|
-| Burundi                  | Africa    |  2007|   49.580|   8390505|   430.0707|
-| Zimbabwe                 | Africa    |  2007|   43.487|  12311143|   469.7093|
-| Guinea-Bissau            | Africa    |  2007|   46.388|   1472041|   579.2317|
-| Niger                    | Africa    |  2007|   56.867|  12894865|   619.6769|
-| Eritrea                  | Africa    |  2007|   58.040|   4906585|   641.3695|
-| Ethiopia                 | Africa    |  2007|   52.947|  76511887|   690.8056|
-| Central African Republic | Africa    |  2007|   44.741|   4369038|   706.0165|
-| Gambia                   | Africa    |  2007|   59.448|   1688359|   752.7497|
+| country                  | continent |  year|  lifeExp|        pop|  gdpPercap|
+|:-------------------------|:----------|-----:|--------:|----------:|----------:|
+| Congo, Dem. Rep.         | Africa    |  2007|   46.462|   64606759|   277.5519|
+| Liberia                  | Africa    |  2007|   45.678|    3193942|   414.5073|
+| Burundi                  | Africa    |  2007|   49.580|    8390505|   430.0707|
+| Zimbabwe                 | Africa    |  2007|   43.487|   12311143|   469.7093|
+| Guinea-Bissau            | Africa    |  2007|   46.388|    1472041|   579.2317|
+| Niger                    | Africa    |  2007|   56.867|   12894865|   619.6769|
+| Eritrea                  | Africa    |  2007|   58.040|    4906585|   641.3695|
+| Ethiopia                 | Africa    |  2007|   52.947|   76511887|   690.8056|
+| Central African Republic | Africa    |  2007|   44.741|    4369038|   706.0165|
+| Gambia                   | Africa    |  2007|   59.448|    1688359|   752.7497|
+| Malawi                   | Africa    |  2007|   48.303|   13327079|   759.3499|
+| Mozambique               | Africa    |  2007|   42.082|   19951656|   823.6856|
+| Sierra Leone             | Africa    |  2007|   42.568|    6144562|   862.5408|
+| Rwanda                   | Africa    |  2007|   46.242|    8860588|   863.0885|
+| Togo                     | Africa    |  2007|   58.420|    5701579|   882.9699|
+| Somalia                  | Africa    |  2007|   48.159|    9118773|   926.1411|
+| Guinea                   | Africa    |  2007|   56.007|    9947814|   942.6542|
+| Myanmar                  | Asia      |  2007|   62.069|   47761980|   944.0000|
+| Afghanistan              | Asia      |  2007|   43.828|   31889923|   974.5803|
+| Comoros                  | Africa    |  2007|   65.152|     710960|   986.1479|
+| Mali                     | Africa    |  2007|   54.467|   12031795|  1042.5816|
+| Madagascar               | Africa    |  2007|   59.443|   19167654|  1044.7701|
+| Uganda                   | Africa    |  2007|   51.542|   29170398|  1056.3801|
+| Nepal                    | Asia      |  2007|   63.785|   28901790|  1091.3598|
+| Tanzania                 | Africa    |  2007|   52.517|   38139640|  1107.4822|
+| Haiti                    | Americas  |  2007|   60.916|    8502814|  1201.6372|
+| Burkina Faso             | Africa    |  2007|   52.295|   14326203|  1217.0330|
+| Zambia                   | Africa    |  2007|   42.384|   11746035|  1271.2116|
+| Ghana                    | Africa    |  2007|   60.022|   22873338|  1327.6089|
+| Bangladesh               | Asia      |  2007|   64.062|  150448339|  1391.2538|
 
-We see that `arrange()`does arrange the items in the order we wanted, it's just that when plotting this order is not preserved. However, note that we start with African countries.
+We see that `arrange()`does arrange the items in the order we wanted, it's just that when plotting this order is not preserved.
 
 1.  Explore the effects of reordering a factor and factor reordering coupled with arrange(). Especially, what effect does this have on a figure?
 
-These explorations should involve the data, the factor levels, and some figures.
+Let's now use `reorder()` to sort the countries by ascending `gdpPercap`
+
+``` r
+reordered_gapminder <- gapminder %>%
+  filter(year == 2007) %>%
+  mutate(country = reorder(country, gdpPercap))
+  
+ggplot(reordered_gapminder, aes(x = gdpPercap , y = country)) +
+  geom_point()
+```
+
+![](hw05-cbnicolau_files/figure-markdown_github/reordered-1.png)
+
+After reordering the countries according to `gdpPercap` the figure plots the sorted countries. Let's have a look at the actual data now
+
+``` r
+reordered_gapminder %>%
+  head(30) %>%
+  knitr::kable()
+```
+
+| country                  | continent |  year|  lifeExp|         pop|   gdpPercap|
+|:-------------------------|:----------|-----:|--------:|-----------:|-----------:|
+| Afghanistan              | Asia      |  2007|   43.828|    31889923|    974.5803|
+| Albania                  | Europe    |  2007|   76.423|     3600523|   5937.0295|
+| Algeria                  | Africa    |  2007|   72.301|    33333216|   6223.3675|
+| Angola                   | Africa    |  2007|   42.731|    12420476|   4797.2313|
+| Argentina                | Americas  |  2007|   75.320|    40301927|  12779.3796|
+| Australia                | Oceania   |  2007|   81.235|    20434176|  34435.3674|
+| Austria                  | Europe    |  2007|   79.829|     8199783|  36126.4927|
+| Bahrain                  | Asia      |  2007|   75.635|      708573|  29796.0483|
+| Bangladesh               | Asia      |  2007|   64.062|   150448339|   1391.2538|
+| Belgium                  | Europe    |  2007|   79.441|    10392226|  33692.6051|
+| Benin                    | Africa    |  2007|   56.728|     8078314|   1441.2849|
+| Bolivia                  | Americas  |  2007|   65.554|     9119152|   3822.1371|
+| Bosnia and Herzegovina   | Europe    |  2007|   74.852|     4552198|   7446.2988|
+| Botswana                 | Africa    |  2007|   50.728|     1639131|  12569.8518|
+| Brazil                   | Americas  |  2007|   72.390|   190010647|   9065.8008|
+| Bulgaria                 | Europe    |  2007|   73.005|     7322858|  10680.7928|
+| Burkina Faso             | Africa    |  2007|   52.295|    14326203|   1217.0330|
+| Burundi                  | Africa    |  2007|   49.580|     8390505|    430.0707|
+| Cambodia                 | Asia      |  2007|   59.723|    14131858|   1713.7787|
+| Cameroon                 | Africa    |  2007|   50.430|    17696293|   2042.0952|
+| Canada                   | Americas  |  2007|   80.653|    33390141|  36319.2350|
+| Central African Republic | Africa    |  2007|   44.741|     4369038|    706.0165|
+| Chad                     | Africa    |  2007|   50.651|    10238807|   1704.0637|
+| Chile                    | Americas  |  2007|   78.553|    16284741|  13171.6388|
+| China                    | Asia      |  2007|   72.961|  1318683096|   4959.1149|
+| Colombia                 | Americas  |  2007|   72.889|    44227550|   7006.5804|
+| Comoros                  | Africa    |  2007|   65.152|      710960|    986.1479|
+| Congo, Dem. Rep.         | Africa    |  2007|   46.462|    64606759|    277.5519|
+| Congo, Rep.              | Africa    |  2007|   55.322|     3800610|   3632.5578|
+| Costa Rica               | Americas  |  2007|   78.782|     4133884|   9645.0614|
+
+Looking at the table it seems like the actual data has not been sorted.
 
 Part 2: File I/O
 ----------------
 
 Experiment with one or more of write\_csv()/read\_csv() (and/or TSV friends), saveRDS()/readRDS(), dput()/dget(). Create something new, probably by filtering or grouped-summarization of Singer or Gapminder. I highly recommend you fiddle with the factor levels, i.e. make them non-alphabetical (see previous section). Explore whether this survives the round trip of writing to file then reading back in.
+
+Let's save the `arranged_gapminder` dataset in a new `.csv` file.
 
 Part 3: Visualization design
 ----------------------------

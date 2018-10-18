@@ -44,7 +44,7 @@ str(gapminder_notOceania)
 levels(gapminder_notOceania$continent)
 nlevels(gapminder_notOceania$continent)
 ```
-We can see from looking at the structure that `Oceania` is still a level of the `continent` factor, and the number of levels in `contient` is still 5, but because `gapminder_notOceania` has fewer observations (1680 rows) that the unmodified `gapminder` (1704 rows), we can see that we effectively filtered out all the cuntries in Oceania
+We can see from looking at the structure that `Oceania` is still a level of the `continent` factor, and the number of levels in `contient` is still 5, but because `gapminder_notOceania` has fewer observations (1680 rows) than the unmodified `gapminder` (1704 rows), we can see that we effectively filtered out all the cuntries in Oceania
 
 Let's confirm this with a plot:
 
@@ -92,11 +92,7 @@ gapminder_notOceania %>%
 ```
 
 
-Be sure to also characterize the (derived) data before and after your factor re-leveling:
-
 3. Explore the effects of arrange(). Does merely arranging the data have any effect on, say, a figure?
-
-Let's compare the effect of reorder and arrage
 
 First, plot `gdpPercap` for each country without any particular order (alphabetical by default)
 
@@ -104,17 +100,6 @@ First, plot `gdpPercap` for each country without any particular order (alphabeti
 gapminder %>%
   filter(year == 2007) %>%
   ggplot(aes(x = gdpPercap , y = country)) + 
-  geom_point()
-```
-
-Let's now use `reorder()` to sort the countries by ascending `gdpPercap`
-
-```{r reordered}
-reordered_gapminder <- gapminder %>%
-  filter(year == 2007) %>%
-  mutate(country = reorder(country, gdpPercap))
-  
-ggplot(reordered_gapminder, aes(x = gdpPercap , y = country)) +
   geom_point()
 ```
 
@@ -129,24 +114,67 @@ ggplot(arranged_gapminder, aes(x = gdpPercap , y = country)) +
   geom_point()
 ```
 
-When only using arrange and saving to the object it doesn't seem to make any difference for the plot, Lets inspect this object:
+When only using `arrange()` and saving to the object it doesn't seem to make any difference for the plot. Let's inspect this object:
 
 ```{r}
 arranged_gapminder %>%
-  head(10) %>%
+  head(30) %>%
   knitr::kable()
 ```
 
-We see that `arrange()`does arrange the items in the order we wanted, it's just that when plotting this order is not preserved. However, note that we start with African countries.
+We see that `arrange()`does arrange the items in the order we wanted, it's just that when plotting this order is not preserved.
 
 4. Explore the effects of reordering a factor and factor reordering coupled with arrange(). Especially, what effect does this have on a figure?
 
-These explorations should involve the data, the factor levels, and some figures.
+Let's now use `fct_reorder()` to sort the countries by ascending `gdpPercap`
 
+```{r reordered}
+reordered_gapminder <- gapminder %>%
+  filter(year == 2007) %>%
+  mutate(country = fct_reorder(country, gdpPercap))
+  
+ggplot(reordered_gapminder, aes(x = gdpPercap , y = country)) +
+  geom_point()
+```
 
+After reordering the countries according to `gdpPercap` the figure plots the sorted countries.
+Let's have a look at the actual data now
+
+```{r}
+reordered_gapminder %>%
+  head(30) %>%
+  knitr::kable()
+```
+
+Looking at the table it seems like the actual data has not been sorted.
+
+Now let's couple `fct_reorder()` with `arrange()`
+
+```{r}
+reordered_arranged_gapminder <- gapminder %>%
+  filter(year == 2007) %>%
+  mutate(country = fct_reorder(country, gdpPercap)) %>%
+  arrange(gdpPercap)
+  
+ggplot(reordered_arranged_gapminder, aes(x = gdpPercap , y = country)) +
+  geom_point()
+
+reordered_arranged_gapminder %>%
+  head(30) %>%
+  knitr::kable()
+```
+
+Using both functions seems to work for the actual data too (not only the figure).
 
 ## Part 2: File I/O
 Experiment with one or more of write_csv()/read_csv() (and/or TSV friends), saveRDS()/readRDS(),  dput()/dget(). Create something new, probably by filtering or grouped-summarization of Singer or Gapminder. I highly recommend you fiddle with the factor levels, i.e. make them non-alphabetical (see previous section). Explore whether this survives the round trip of writing to file then reading back in.
+
+Let's save the `reordered_arranged_gapminder` dataset in a new `.csv` file.
+
+```{r}
+write_csv(reordered_arranged_gapminder, "RA_gapminder.csv")
+```
+
 
 ## Part 3: Visualization design
 
