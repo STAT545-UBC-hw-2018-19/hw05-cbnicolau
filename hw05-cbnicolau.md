@@ -291,7 +291,7 @@ ggplot(reordered_arranged_gapminder, aes(x = gdpPercap , y = country)) +
   geom_point()
 ```
 
-![](hw05-cbnicolau_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](hw05-cbnicolau_files/figure-markdown_github/reorder%20and%20arrange-1.png)
 
 ``` r
 reordered_arranged_gapminder %>%
@@ -418,7 +418,7 @@ gapminder_NO2 <- gapminder_notOceania %>% #save into new object
 compare_plots <- grid.arrange(gapminder_NO, gapminder_NO2, ncol = 2)
 ```
 
-![](hw05-cbnicolau_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](hw05-cbnicolau_files/figure-markdown_github/gapminder%20without%20oceania%20embelished-1.png)
 
 ``` r
 compare_plots
@@ -431,6 +431,35 @@ compare_plots
 
 Then, make a new graph by converting this visual (or another, if you’d like) to a plotly graph. What are some things that plotly makes possible, that are not possible with a regular ggplot2 graph?
 
+``` r
+library(plotly)
+```
+
+    ## Warning: package 'plotly' was built under R version 3.4.4
+
+    ## 
+    ## Attaching package: 'plotly'
+
+    ## The following object is masked from 'package:ggplot2':
+    ## 
+    ##     last_plot
+
+    ## The following object is masked from 'package:stats':
+    ## 
+    ##     filter
+
+    ## The following object is masked from 'package:graphics':
+    ## 
+    ##     layout
+
+``` r
+#ggplotly(gapminder_NO2)
+```
+
+The `plotly()` is a more interactive graph, for example, you can easily the values of each point in the graph, zoom in, and see the exact values of the summary statistics (quartiles, mean, median)
+
+**Note:** I had to comment out the plotly call because otherwise the knit would be haulted
+
 Part 4: Writing figures to file
 -------------------------------
 
@@ -438,7 +467,8 @@ Use ggsave() to explicitly save a plot to file. Then use `![Alt text](/path/to/i
 
 -   Arguments of ggsave(), such as width, height, resolution or text scaling.
 -   Various graphics devices, e.g. a vector vs. raster format.
--   Explicit provision of the plot object p via ggsave(..., plot = p). - Show a situation in which this actually matters.
+-   Explicit provision of the plot object p via ggsave(..., plot = p).
+-   Show a situation in which this actually matters.
 
 Let's save the comparison plot into a file
 
@@ -446,4 +476,4 @@ Let's save the comparison plot into a file
 ggsave("compare_plots.png", compare_plots, width = 10, height = 7)
 ```
 
-And call it to embed it to the report [like this](C:/Users/const/ownCloud/UBC%20Courses/5%20Term%201%202018/STAT545A/git_docs/hw05-cbnicolau/compare_plots.png)
+And try to call it to embed it to the report ![like this](https://github.com/STAT545-UBC-students/hw05-cbnicolau/blob/master/compare_plots.png?raw=true)

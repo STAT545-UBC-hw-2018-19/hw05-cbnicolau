@@ -141,7 +141,7 @@ ggplot(reordered_gapminder, aes(x = gdpPercap , y = country)) +
 After reordering the countries according to `gdpPercap` the figure plots the sorted countries.
 Let's have a look at the actual data now
 
-```{r}
+```{r reordered gapminder check}
 reordered_gapminder %>%
   head(30) %>%
   knitr::kable()
@@ -151,7 +151,7 @@ Looking at the table it seems like the actual data has not been sorted.
 
 Now let's couple `fct_reorder()` with `arrange()`
 
-```{r}
+```{r reorder and arrange}
 reordered_arranged_gapminder <- gapminder %>%
   filter(year == 2007) %>%
   mutate(country = fct_reorder(country, gdpPercap)) %>%
@@ -172,13 +172,13 @@ Experiment with one or more of write_csv()/read_csv() (and/or TSV friends), save
 
 Let's save the `reordered_arranged_gapminder` dataset in a new `.csv` file.
 
-```{r}
+```{r save to file}
 write_csv(reordered_arranged_gapminder, "RA_gapminder.csv")
 ```
 
 Let's read it now
 
-```{r}
+```{r read from file}
 RA_gapminder <- read_csv("RA_gapminder.csv")
 
 head(RA_gapminder, 30) %>%
@@ -190,7 +190,7 @@ head(RA_gapminder, 30) %>%
 
 Remake at least one figure or create a new one, in light of something you learned in the recent class meetings about visualization design and color. Maybe juxtapose your first attempt and what you obtained after some time spent working on it. Reflect on the differences. If using Gapminder, you can use the country or continent color scheme that ships with Gapminder. Consult the dimensions listed in All the Graph Things.
 
-```{r}
+```{r gapminder without oceania embelished}
 gapminder_NO2 <- gapminder_notOceania %>% #save into new object
   filter(year == 2007) %>%
   mutate(continent = fct_reorder(continent,gdpPercap, mean)) %>% #reorder according to the mean, increasing
@@ -208,19 +208,30 @@ compare_plots
 
 Then, make a new graph by converting this visual (or another, if you’d like) to a plotly graph. What are some things that plotly makes possible, that are not possible with a regular ggplot2 graph?
 
+```{r plotly}
+library(plotly)
+#ggplotly(gapminder_NO2)
+```
+
+The `plotly()` is a more interactive graph, for example, you can easily the values of each point in the graph, zoom in, and see the exact values of the summary statistics (quartiles, mean, median)  
+
+**Note:** I had to comment out the plotly call because otherwise the knit would be haulted
+
 ## Part 4: Writing figures to file
 
 Use ggsave() to explicitly save a plot to file. Then use `![Alt text](/path/to/img.png)` to load and embed it in your report. You can play around with various options, such as:
 
 - Arguments of ggsave(), such as width, height, resolution or text scaling.
 - Various graphics devices, e.g. a vector vs. raster format.
-- Explicit provision of the plot object p via ggsave(..., plot = p). - Show a situation in which this actually matters.
+- Explicit provision of the plot object p via ggsave(..., plot = p). 
+- Show a situation in which this actually matters.
 
 Let's save the comparison plot into a file
 
-```{r}
+```{r save plot to file}
 ggsave("compare_plots.png", compare_plots, width = 10, height = 7)
 ```
 
-And call it to embed it to the report [like this](C:/Users/const/ownCloud/UBC Courses/5 Term 1 2018/STAT545A/git_docs/hw05-cbnicolau/compare_plots.png)
+And try to call it to embed it to the report ![like this](https://github.com/STAT545-UBC-students/hw05-cbnicolau/blob/master/compare_plots.png?raw=true) 
+
 

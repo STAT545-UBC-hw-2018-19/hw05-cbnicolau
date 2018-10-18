@@ -7,17 +7,17 @@ Link to Homework instructions ([here](http://stat545.com/Classroom/assignments/h
 
 This repo contains:
 1. README file
-2. R Markdown file ([here]())
-2. Markdown file ([here]())
+2. R Markdown file ([here](https://github.com/STAT545-UBC-students/hw05-cbnicolau/blob/master/hw05-cbnicolau.Rmd))
+2. Markdown file ([here](https://github.com/STAT545-UBC-students/hw05-cbnicolau/blob/master/hw05-cbnicolau.md))
 
 ### Homework tasks completion (for personal use mostly)
 
 - [x] Readme file
-- [ ] Add links to files in README file
-- [ ] Part 1: Factor management
-- [ ] Part 2: File I/O
-- [ ] Part 3: Visualization design
-- [ ] Part 4: Writing figures to file
+- [x] Add links to files in README file
+- [x] Part 1: Factor management
+- [x] Part 2: File I/O
+- [x] Part 3: Visualization design
+- [x] Part 4: Writing figures to file
 - [ ] Reflection and Submit hw link to canvas
 - [ ] Peer review hw04
 - [ ] Submit link of peer review to canvas
